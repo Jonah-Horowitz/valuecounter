@@ -17,7 +17,7 @@ public class VariableBundle {
         // TODO
     }
 
-    public static ArrayList<VariableBundle> loadBundles() {
+    public static ArrayList<VariableBundle> loadTestBundles() {
         ArrayList<VariableBundle> tempList = new ArrayList();
         VariableBundle v1 = new VariableBundle();
         v1.caption = "Test1";
@@ -33,7 +33,9 @@ public class VariableBundle {
         v3.mainValue=7;
         v3.caption="Test3";
         tempList.add(v3);
-        tempList.add(v1.makeCopy());
+        VariableBundle v4 = v1.makeCopy();
+        v4.caption = System.getProperty("user.home");
+        tempList.add(v4);
         tempList.add(v1.makeCopy());
         return tempList; // TODO
     }

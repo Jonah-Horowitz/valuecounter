@@ -12,6 +12,7 @@ import android.widget.TextView;
 import net.hashjellyfish.valuecounter.vb.VariableBundle;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHolder> {
 
@@ -22,7 +23,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
         public ViewHolder(LinearLayout v) {
             super(v);
             layoutHolder = v;
-            ((View)layoutHolder.findViewById(R.id.left_button)).setOnClickListener(new View.OnClickListener() {
+            layoutHolder.findViewById(R.id.left_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
                     if (currentData.op1!=null) {
@@ -31,7 +32,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
                     }
                 }
             });
-            ((View)layoutHolder.findViewById(R.id.left_middle_button)).setOnClickListener(new View.OnClickListener() {
+            layoutHolder.findViewById(R.id.left_middle_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
                     if (currentData.op2!=null) {
@@ -40,7 +41,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
                     }
                 }
             });
-            ((View)layoutHolder.findViewById(R.id.right_middle_button)).setOnClickListener(new View.OnClickListener() {
+            layoutHolder.findViewById(R.id.right_middle_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
                     if (currentData.op3!=null) {
@@ -49,7 +50,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
                     }
                 }
             });
-            ((View)layoutHolder.findViewById(R.id.right_button)).setOnClickListener(new View.OnClickListener() {
+            layoutHolder.findViewById(R.id.right_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
                     Snackbar.make(vv,"Settings button pressed on number "+getAdapterPosition(),Snackbar.LENGTH_LONG)
@@ -77,9 +78,9 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
         }
     }
 
-    private ArrayList<VariableBundle> dataList;
+    public List<VariableBundle> dataList;
 
-    public VariableAdapter(ArrayList<VariableBundle> data) {
+    public VariableAdapter(List<VariableBundle> data) {
         dataList = data;
     }
 
@@ -87,8 +88,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
     public VariableAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.variable_bundle_view, parent, false);
         // TODO
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
     @Override
