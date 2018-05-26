@@ -1,5 +1,6 @@
 package net.hashjellyfish.valuecounter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,11 +29,12 @@ public class MainActivity extends AppCompatActivity {
     public static final File SETTINGS_FILE = new File(new File(System.getProperty("user.home"),
             "valuecounter"),"local_settings.properties");
     public static final String VALUE_BUNDLES_FILENAME = "valueBundles.json";
+    public static final String MAIN_SETTINGS_MESSAGE = "net.hashjellyfish.valuecounter.MAIN_SETTINGS";
 
     private RecyclerView main_list_rec;
     private VariableAdapter main_list_adapter;
     private RecyclerView.LayoutManager main_list_layout_manager;
-    private Properties localProps;
+    protected static Properties localProps = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            loadSettings();
+            return true;
+        } else if (id == R.id.action_add) {
             return true;
         }
 
@@ -105,11 +110,12 @@ public class MainActivity extends AppCompatActivity {
             // TODO: Set up default properties.
         } else if (!SETTINGS_FILE.isFile()) {
             throw new IOException("Cannot read local settings: Expected settings file is not a file.");
+        } else {
+            localProps = new Properties();
+            FileReader in = new FileReader(SETTINGS_FILE);
+            localProps.load(in);
+            in.close();
         }
-        localProps = new Properties();
-        FileReader in = new FileReader(SETTINGS_FILE);
-        localProps.load(in);
-        in.close();
     }
 
     /**
@@ -177,5 +183,13 @@ public class MainActivity extends AppCompatActivity {
                 throw new IOException("There was an error writing the bundles to a file.");
             }
         }
+    }
+
+    /**
+     * Intends to load the main settings <code>Activity</code> for this app.
+     */
+    public void loadSettings() {
+        Intent intent = new Intent(this, MainSettingsActivity.class);
+        startActivity(intent);
     }
 }

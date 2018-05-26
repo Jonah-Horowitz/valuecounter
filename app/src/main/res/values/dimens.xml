@@ -2,5 +2,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="small_font_size">16sp</dimen>
     <dimen name="normal_font_size">24sp</dimen>
+    <dimen name="large_font_size">36sp</dimen>
     <dimen name="value_font_size">48sp</dimen>
 </resources>
