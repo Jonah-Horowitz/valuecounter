@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
      * Saves both properties and bundles into their appropriate locations.
      * @throws IOException If an I/O error occurred.
      */
-    public void saveState() throws IOException {
+    protected void saveState() throws IOException {
         saveProperties();
         saveBundles(main_list_adapter.dataList,new File(localProps.getProperty("valueBundleLocation"),
                 VALUE_BUNDLES_FILENAME));
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
      * doesn't exist.
      * @throws IOException If an I/O error occurred.
      */
-    public void loadProperties() throws IOException {
+    protected static void loadProperties() throws IOException {
         if (!SETTINGS_FILE.exists()) {
             localProps = new Properties();
             localProps.put("valueBundleLocation",SETTINGS_FILE.getParentFile().toString());
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
      * Saves the current <code>Properties</code> to the default file.
      * @throws IOException If an I/O error occurred.
      */
-    public void saveProperties() throws IOException {
+    protected static void saveProperties() throws IOException {
         if (SETTINGS_FILE.getParentFile().exists() && !SETTINGS_FILE.getParentFile().isDirectory()) {
             throw new IOException("Expected settings parent directory exists and is not a directory.");
         } else if (!SETTINGS_FILE.getParentFile().exists() && !SETTINGS_FILE.getParentFile().mkdirs()) {
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
      *                <code>storage</code> does not exist, is null, or is an empty file.
      * @throws IOException If an I/O error occurred.
      */
-    public static List<VariableBundle> loadBundles(File storage) throws IOException {
+    protected static List<VariableBundle> loadBundles(File storage) throws IOException {
         if (storage==null || !storage.exists()) {
             return new ArrayList<VariableBundle>();
         } else if (!storage.isFile()) {
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
      * @param storage The <code>File</code> where the bundles are to be stored.
      * @throws IOException If an I/O error occurred.
      */
-    public static void saveBundles(List<VariableBundle> vbs, File storage) throws IOException {
+    protected static void saveBundles(List<VariableBundle> vbs, File storage) throws IOException {
         if (storage==null || storage.exists() && !storage.isFile()) {
             throw new IOException("Expected bundle file exists and is not a file.");
         } else {
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Intends to load the main settings <code>Activity</code> for this app.
      */
-    public void loadSettings() {
+    protected void loadSettings() {
         Intent intent = new Intent(this, MainSettingsActivity.class);
         startActivity(intent);
     }

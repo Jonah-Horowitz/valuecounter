@@ -21,14 +21,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_variable_bundle_location"
-                android:textSize="@dimen/normal_font_size" />
+                android:textStyle="bold"
+                android:textSize="@dimen/normal_font_size"
+                android:layout_weight="0" />
 
-            <EditText
+            <TextView
                 android:id="@+id/vb_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:inputType="text" />
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/select_location_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ellipsis"
+                android:textSize="@dimen/normal_font_size"
+                android:minWidth="0dp"
+                android:layout_weight="0" />
 
         </LinearLayout>
 
