@@ -29,10 +29,9 @@ public class MainActivity extends AppCompatActivity {
     public static final File SETTINGS_FILE = new File(new File(System.getProperty("user.home"),
             "valuecounter"),"local_settings.properties");
     public static final String VALUE_BUNDLES_FILENAME = "valueBundles.json";
-    public static final String MAIN_SETTINGS_MESSAGE = "net.hashjellyfish.valuecounter.MAIN_SETTINGS";
 
     private RecyclerView main_list_rec;
-    private VariableAdapter main_list_adapter;
+    protected static VariableAdapter main_list_adapter;
     private RecyclerView.LayoutManager main_list_layout_manager;
     protected static Properties localProps = null;
 
@@ -40,16 +39,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        main_list_rec = (RecyclerView) findViewById(R.id.main_list_recycler);
+        main_list_rec = findViewById(R.id.main_list_recycler);
         main_list_rec.setHasFixedSize(true);
 
         main_list_layout_manager = new LinearLayoutManager(this);
         main_list_rec.setLayoutManager(main_list_layout_manager);
 
-        List<VariableBundle> variableList = new ArrayList<VariableBundle>();
+        List<VariableBundle> variableList = new ArrayList<>();
         try {
             loadProperties();
 //            variableList = loadBundles(new File(localProps.getProperty("valueBundleLocation"),VALUE_BUNDLES_FILENAME));
@@ -148,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
      */
     protected static List<VariableBundle> loadBundles(File storage) throws IOException {
         if (storage==null || !storage.exists()) {
-            return new ArrayList<VariableBundle>();
+            return new ArrayList<>();
         } else if (!storage.isFile()) {
             throw new IOException("Expected bundle file is not a file.");
         } else {
