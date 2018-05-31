@@ -1,10 +1,20 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
+/**
+ * Adds a fixed value to the input.
+ */
 public class PlusN implements Operation<Integer,Integer> {
-    private int n;
+    private static final long serialVersionUID = 839334479128530865L;
+    private int n=0;
 
-    public PlusN(int aNumber) {
-        n=aNumber;
+    /**
+     * Changes the value which is to be added to the input.
+     * @param aNumber The new value to be added to the input.
+     * @return This operation.
+     */
+    public PlusN setValue(int aNumber) {
+        n = aNumber;
+        return this;
     }
 
     @Override
@@ -19,6 +29,11 @@ public class PlusN implements Operation<Integer,Integer> {
 
     @Override
     public PlusN makeCopy() {
-        return new PlusN(n);
+        return (new PlusN()).setValue(n);
+    }
+
+    @Override
+    public String opType() {
+        return "+";
     }
 }

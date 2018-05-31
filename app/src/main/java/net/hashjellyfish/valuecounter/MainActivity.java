@@ -1,6 +1,7 @@
 package net.hashjellyfish.valuecounter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,17 +24,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainActivity extends AppCompatActivity {
-    public static final File SETTINGS_FILE = new File(new File(System.getProperty("user.home"),
-            "valuecounter"),"local_settings.properties");
+    public static final String DEFAULT_BUNDLES_LOCATION = (new File(System.getProperty("user.home")
+            ,"valuecounter")).toString();
     public static final String VALUE_BUNDLES_FILENAME = "valueBundles.json";
 
-    private RecyclerView main_list_rec;
-    protected static VariableAdapter main_list_adapter;
-    private RecyclerView.LayoutManager main_list_layout_manager;
-    protected static Properties localProps = null;
+    protected VariableAdapter main_list_adapter;
+    protected static SharedPreferences localPrefs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,23 +42,24 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        main_list_rec = findViewById(R.id.main_list_recycler);
+        RecyclerView main_list_rec = findViewById(R.id.main_list_recycler);
         main_list_rec.setHasFixedSize(true);
 
-        main_list_layout_manager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager main_list_layout_manager = new LinearLayoutManager(this);
         main_list_rec.setLayoutManager(main_list_layout_manager);
 
         List<VariableBundle> variableList = new ArrayList<>();
         try {
             loadProperties();
-//            variableList = loadBundles(new File(localProps.getProperty("valueBundleLocation"),VALUE_BUNDLES_FILENAME));
+            variableList = loadBundles(new File(localPrefs.getString("valueBundleLocation",
+                    DEFAULT_BUNDLES_LOCATION),VALUE_BUNDLES_FILENAME));
             variableList = VariableBundle.loadTestBundles();
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         }
 
-        main_list_adapter = new VariableAdapter(variableList);
+        main_list_adapter = new VariableAdapter(this, variableList);
         main_list_rec.setAdapter(main_list_adapter);
     }
 
@@ -87,52 +88,37 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode==VariableAdapter.BUNDLE_SETTINGS_RESULT_CODE) {
+            if (resultCode==RESULT_OK) {
+                main_list_adapter.dataList.remove(data.getIntExtra("dataPosition",-1));
+                main_list_adapter.dataList.add(data.getIntExtra("dataPosition",-1),(VariableBundle)data.getSerializableExtra("vbData"));
+                main_list_adapter.notifyItemChanged(data.getIntExtra("dataPosition",-1));
+            }
+        }
+    }
+
     /**
      * Saves both properties and bundles into their appropriate locations.
      * @throws IOException If an I/O error occurred.
      */
     protected void saveState() throws IOException {
-        saveProperties();
-        saveBundles(main_list_adapter.dataList,new File(localProps.getProperty("valueBundleLocation"),
-                VALUE_BUNDLES_FILENAME));
+        saveBundles(main_list_adapter.dataList,new File(localPrefs
+                .getString("valueBundleLocation",DEFAULT_BUNDLES_LOCATION)
+                ,VALUE_BUNDLES_FILENAME));
     }
 
     /**
      * Loads the default <code>Properties</code> file or instantiates the defaults if the file
      * doesn't exist.
-     * @throws IOException If an I/O error occurred.
      */
-    protected static void loadProperties() throws IOException {
-        if (!SETTINGS_FILE.exists()) {
-            localProps = new Properties();
-            localProps.put("valueBundleLocation",SETTINGS_FILE.getParentFile().toString());
-            // TODO: Set up default properties.
-        } else if (!SETTINGS_FILE.isFile()) {
-            throw new IOException("Cannot read local settings: Expected settings file is not a file.");
-        } else {
-            localProps = new Properties();
-            FileReader in = new FileReader(SETTINGS_FILE);
-            localProps.load(in);
-            in.close();
-        }
-    }
-
-    /**
-     * Saves the current <code>Properties</code> to the default file.
-     * @throws IOException If an I/O error occurred.
-     */
-    protected static void saveProperties() throws IOException {
-        if (SETTINGS_FILE.getParentFile().exists() && !SETTINGS_FILE.getParentFile().isDirectory()) {
-            throw new IOException("Expected settings parent directory exists and is not a directory.");
-        } else if (!SETTINGS_FILE.getParentFile().exists() && !SETTINGS_FILE.getParentFile().mkdirs()) {
-            throw new IOException("Cannot create settings parent directory.");
-        }
-        if (SETTINGS_FILE.exists() && !SETTINGS_FILE.isFile()) {
-            throw new IOException("Expected settings file exists and is not a file.");
-        } else {
-            FileWriter out = new FileWriter(SETTINGS_FILE);
-            localProps.store(out,"Saved settings for ValueCounter app.");
-            out.close();
+    protected void loadProperties() {
+        localPrefs = getDefaultSharedPreferences(this);
+        if (!localPrefs.contains("valueBundleLocation")) {
+            localPrefs.edit()
+                    .putString("valueBundleLocation",DEFAULT_BUNDLES_LOCATION)
+                    .apply();
         }
     }
 

@@ -1,10 +1,20 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
+/**
+ * Subtracts a fixed value from the input.
+ */
 public class MinusN implements Operation<Integer,Integer>, Cloneable {
-    private int n;
+    private static final long serialVersionUID = 6372978879458320415L;
+    private int n=0;
 
-    public MinusN(int aNumber) {
-        n=aNumber;
+    /**
+     * Changes the value to be subtracted from inputs.
+     * @param aNumber The new value to be subtracted from inputs.
+     * @return This operation.
+     */
+    public MinusN setValue(int aNumber) {
+        n = aNumber;
+        return this;
     }
 
     @Override
@@ -19,6 +29,11 @@ public class MinusN implements Operation<Integer,Integer>, Cloneable {
 
     @Override
     public MinusN makeCopy() {
-        return new MinusN(n);
+        return (new MinusN()).setValue(n);
+    }
+
+    @Override
+    public String opType() {
+        return "-";
     }
 }

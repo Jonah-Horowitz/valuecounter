@@ -1,10 +1,20 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
+/**
+ * Multiplies inputs by a fixed number.
+ */
 public class TimesN implements Operation<Integer,Integer> {
-    private int n;
+    private static final long serialVersionUID = 8261435150568043500L;
+    private int n=1;
 
-    public TimesN(int aNumber) {
+    /**
+     * Changes the value to be multiplied by inputs.
+     * @param aNumber The new value to be multiplied by inputs.
+     * @return This operation.
+     */
+    public TimesN setValue(int aNumber) {
         n = aNumber;
+        return this;
     }
 
     @Override
@@ -19,6 +29,11 @@ public class TimesN implements Operation<Integer,Integer> {
 
     @Override
     public TimesN makeCopy() {
-        return new TimesN(n);
+        return (new TimesN()).setValue(n);
+    }
+
+    @Override
+    public String opType() {
+        return "x";
     }
 }
