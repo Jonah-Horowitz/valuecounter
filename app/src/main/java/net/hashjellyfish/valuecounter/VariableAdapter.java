@@ -89,7 +89,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
             layoutHolder.findViewById(R.id.right_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
-                    Snackbar.make(vv,"Settings button pressed on number "+getAdapterPosition(),Snackbar.LENGTH_LONG).setAction("Action",null).show();
+//                    Snackbar.make(vv,"Settings button pressed on number "+getAdapterPosition(),Snackbar.LENGTH_LONG).setAction("Action",null).show();
                     Intent intent = new Intent(parentActivity, BundleSettingsActivity.class);
                     intent.putExtra("vbData",currentData);
                     intent.putExtra("dataPosition",dataPosition);

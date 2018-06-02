@@ -16,25 +16,109 @@ public class BundleSettingsActivity extends AppCompatActivity {
     public static final String NONE_OP = "None";
     public static final String[] OPERATION_TYPES = new String[] { "+", "-", "x", "=", NONE_OP };
 
+    private int dataPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bundle_settings);
 
-        Intent intent = getIntent();
-        Object prevb = intent.getSerializableExtra("vbData");
-        VariableBundle vb = null;
-        if (prevb != null && (prevb instanceof VariableBundle)) {
-            vb = (VariableBundle) prevb;
+        if (savedInstanceState==null) {
+            Intent intent = getIntent();
+            Object preVB = intent.getSerializableExtra("vbData");
+            VariableBundle vb = null;
+            if (preVB != null && (preVB instanceof VariableBundle)) {
+                vb = (VariableBundle)preVB;
+            }
+            setData(vb);
+            dataPosition = intent.getIntExtra("dataPosition",-1);
+        } else {
+            setData((VariableBundle)savedInstanceState.getSerializable("savedVB"));
+            dataPosition = savedInstanceState.getInt("dataPosition");
         }
-        setData(vb);
+        setListener(R.id.bundle_op1_type, R.id.bundle_op1_amount);
+        setListener(R.id.bundle_op2_type, R.id.bundle_op2_amount);
+        setListener(R.id.bundle_op3_type, R.id.bundle_op3_amount);
+        findViewById(R.id.save_bundle_settings_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveVB();
+            }
+        });
+        findViewById(R.id.cancel_bundle_settings_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelVB();
+            }
+        });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("savedVB",makeVB());
+        outState.putInt("dataPosition", dataPosition);
+    }
+
+    /**
+     * Turns the data in the various fields of this activity into a <code>VariableBundle</code>.
+     * @return A <code>VariableBundle</code> consisting of the information in this <code>Activity</code>.
+     */
+    private VariableBundle makeVB() {
+        VariableBundle tempBundle = new VariableBundle();
+        tempBundle.caption = ((EditText)findViewById(R.id.bundle_name_field)).getText().toString();
+        tempBundle.mainValue = Integer.parseInt(((EditText)findViewById(R.id.bundle_value_field)).getText().toString());
+        tempBundle.op1 = VariableBundle.parseOperation(((Button)findViewById(R.id.bundle_op1_type))
+                .getText().toString(), ((EditText)findViewById(R.id.bundle_op1_amount)).getText()
+                .toString());
+        tempBundle.op2 = VariableBundle.parseOperation(((Button)findViewById(R.id.bundle_op2_type))
+                .getText().toString(), ((EditText)findViewById(R.id.bundle_op2_amount)).getText()
+                .toString());
+        tempBundle.op3 = VariableBundle.parseOperation(((Button)findViewById(R.id.bundle_op3_type))
+                .getText().toString(), ((EditText)findViewById(R.id.bundle_op3_amount)).getText()
+                .toString());
+        return tempBundle;
+    }
+
+    /**
+     * Returns the data from this <code>Activity</code> as its result.
+     */
+    private void saveVB() {
+        Intent result = new Intent();
+        result.putExtra("vbData", makeVB());
+        result.putExtra("dataPosition", dataPosition);
+        setResult(RESULT_OK, result);
+        finish();
+    }
+
+    /**
+     * Cancels this edit.
+     */
+    private void cancelVB() {
+        setResult(RESULT_CANCELED, null);
+        finish();
+    }
+
+    /**
+     * Sets up the click listener for a given <code>Button</code> and <code>EditText</code> pair.
+     * @param buttonId Must be the id of a <code>Button</code>.
+     * @param textId Should be paired with the above <code>Button</code>, typically an <code>EditText</code>.
+     */
+    private void setListener(final int buttonId, final int textId) {
+        findViewById(buttonId).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseOperationType(buttonId);
+                findViewById(textId).setVisibility(((Button)findViewById(buttonId)).getText()== NONE_OP ? View.GONE : View.VISIBLE);
+            }
+        });
     }
 
     /**
      * Sets this <code>Activity</code> to display the data in the given <code>VariableBundle</code>.
      * @param vb A <code>VariableBundle</code> to be edited here.
      */
-    void setData(@Nullable VariableBundle vb) {
+    private void setData(@Nullable VariableBundle vb) {
         if (vb==null) {
             // TODO: Display neutral text for null vb.
         } else {

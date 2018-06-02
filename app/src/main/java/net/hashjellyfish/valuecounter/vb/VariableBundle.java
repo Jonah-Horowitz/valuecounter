@@ -1,8 +1,12 @@
 package net.hashjellyfish.valuecounter.vb;
 
+import android.support.annotation.Nullable;
+
+import net.hashjellyfish.valuecounter.vb.ops.EqualsN;
 import net.hashjellyfish.valuecounter.vb.ops.MinusN;
 import net.hashjellyfish.valuecounter.vb.ops.Operation;
 import net.hashjellyfish.valuecounter.vb.ops.PlusN;
+import net.hashjellyfish.valuecounter.vb.ops.TimesN;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +19,7 @@ public class VariableBundle implements Serializable {
     public Operation<Integer,Integer> op2 = null;
     public Operation<Integer,Integer> op3 = null;
 
-    private VariableBundle() {
+    public VariableBundle() {
         // TODO: Make a real constructor?
     }
 
@@ -42,8 +46,22 @@ public class VariableBundle implements Serializable {
         return tempList; // TODO: Remove this method.
     }
 
-    public static Operation<Integer,Integer> parseOperation(String target) {
-        return null; // TODO: Make this method or remove it?
+    /**
+     * Creates an <code>Operation</code> of the appropriate type.
+     * @param type A <code>String</code> representing the type of <code>Operation</code> returned.
+     * @param value A <code>String</code> which can be parsed into an <code>int</code> which represents the <code>Operation</code>'s parameter.
+     * @return An instance of a class extending <code>Operation</code>, or null if the <code>type</code> is not recognized.
+     */
+    @Nullable
+    public static Operation<Integer,Integer> parseOperation(String type, String value) {
+        switch (type) {
+            case "+": return new PlusN().setValue(Integer.parseInt(value));
+            case "-": return new MinusN().setValue(Integer.parseInt(value));
+            case "*":
+            case "x": return new TimesN().setValue(Integer.parseInt(value));
+            case "=": return new EqualsN().setValue(Integer.parseInt(value));
+        }
+        return null;
     }
 
     private VariableBundle makeCopy() {

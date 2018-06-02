@@ -92,9 +92,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode==VariableAdapter.BUNDLE_SETTINGS_RESULT_CODE) {
             if (resultCode==RESULT_OK) {
-                main_list_adapter.dataList.remove(data.getIntExtra("dataPosition",-1));
-                main_list_adapter.dataList.add(data.getIntExtra("dataPosition",-1),(VariableBundle)data.getSerializableExtra("vbData"));
-                main_list_adapter.notifyItemChanged(data.getIntExtra("dataPosition",-1));
+                int dataPos = data.getIntExtra("dataPosition", -1);
+                if (dataPos==-1) {
+                    return;
+                }
+                main_list_adapter.dataList.remove(dataPos);
+                main_list_adapter.dataList.add(dataPos,(VariableBundle)data.getSerializableExtra("vbData"));
+                main_list_adapter.notifyItemChanged(dataPos);
             }
         }
     }
