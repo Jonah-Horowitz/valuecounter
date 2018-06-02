@@ -5,6 +5,8 @@ package net.hashjellyfish.valuecounter.vb.ops;
  */
 public class EqualsN implements Operation<Integer,Integer> {
     private static final long serialVersionUID = -9175502930396860316L;
+    public static final String OP_ID = "=";
+
     private int n=0;
 
     /**
@@ -24,7 +26,7 @@ public class EqualsN implements Operation<Integer,Integer> {
 
     @Override
     public String toString() {
-        return "="+n;
+        return OP_ID+n;
     }
 
     @Override
@@ -34,6 +36,6 @@ public class EqualsN implements Operation<Integer,Integer> {
 
     @Override
     public String opType() {
-        return "=";
+        return OP_ID;
     }
 }

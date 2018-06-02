@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public class VariableBundle implements Serializable {
     private static final long serialVersionUID = 6353897323909559255L;
+
     public String caption = "";
     public int mainValue = 0;
     public Operation<Integer,Integer> op1 = null;
@@ -55,15 +56,18 @@ public class VariableBundle implements Serializable {
     @Nullable
     public static Operation<Integer,Integer> parseOperation(String type, String value) {
         switch (type) {
-            case "+": return new PlusN().setValue(Integer.parseInt(value));
-            case "-": return new MinusN().setValue(Integer.parseInt(value));
-            case "*":
-            case "x": return new TimesN().setValue(Integer.parseInt(value));
-            case "=": return new EqualsN().setValue(Integer.parseInt(value));
+            case PlusN.OP_ID: return new PlusN().setValue(Integer.parseInt(value));
+            case MinusN.OP_ID: return new MinusN().setValue(Integer.parseInt(value));
+            case TimesN.OP_ID: return new TimesN().setValue(Integer.parseInt(value));
+            case EqualsN.OP_ID: return new EqualsN().setValue(Integer.parseInt(value));
         }
         return null;
     }
 
+    /**
+     * Creates a deep copy of this <code>VariableBundle</code>.
+     * @return The deep copy of this.
+     */
     private VariableBundle makeCopy() {
         VariableBundle v = new VariableBundle();
         v.caption = this.caption;

@@ -11,12 +11,18 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import net.hashjellyfish.valuecounter.vb.VariableBundle;
+import net.hashjellyfish.valuecounter.vb.ops.EqualsN;
+import net.hashjellyfish.valuecounter.vb.ops.MinusN;
+import net.hashjellyfish.valuecounter.vb.ops.PlusN;
+import net.hashjellyfish.valuecounter.vb.ops.TimesN;
 
 public class BundleSettingsActivity extends AppCompatActivity {
     public static final String NONE_OP = "None";
-    public static final String[] OPERATION_TYPES = new String[] { "+", "-", "x", "=", NONE_OP };
+    public static final String[] OPERATION_TYPES = new String[] {PlusN.OP_ID, MinusN.OP_ID,
+            TimesN.OP_ID, EqualsN.OP_ID, NONE_OP };
 
     private int dataPosition;
+    private int originalValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +35,14 @@ public class BundleSettingsActivity extends AppCompatActivity {
             VariableBundle vb = null;
             if (preVB != null && (preVB instanceof VariableBundle)) {
                 vb = (VariableBundle)preVB;
+                originalValue = vb.mainValue;
             }
             setData(vb);
             dataPosition = intent.getIntExtra("dataPosition",-1);
         } else {
             setData((VariableBundle)savedInstanceState.getSerializable("savedVB"));
             dataPosition = savedInstanceState.getInt("dataPosition");
+            originalValue = savedInstanceState.getInt("originalValue");
         }
         setListener(R.id.bundle_op1_type, R.id.bundle_op1_amount);
         setListener(R.id.bundle_op2_type, R.id.bundle_op2_amount);
@@ -58,6 +66,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putSerializable("savedVB",makeVB());
         outState.putInt("dataPosition", dataPosition);
+        outState.putInt("originalValue", originalValue);
     }
 
     /**
@@ -87,6 +96,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
         Intent result = new Intent();
         result.putExtra("vbData", makeVB());
         result.putExtra("dataPosition", dataPosition);
+        result.putExtra("originalValue", originalValue);
         setResult(RESULT_OK, result);
         finish();
     }
@@ -108,8 +118,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
         findViewById(buttonId).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chooseOperationType(buttonId);
-                findViewById(textId).setVisibility(((Button)findViewById(buttonId)).getText()== NONE_OP ? View.GONE : View.VISIBLE);
+                chooseOperationType(buttonId, textId);
             }
         });
     }
@@ -120,7 +129,14 @@ public class BundleSettingsActivity extends AppCompatActivity {
      */
     private void setData(@Nullable VariableBundle vb) {
         if (vb==null) {
-            // TODO: Display neutral text for null vb.
+            for (int buttonId : new int[] { R.id.bundle_op1_type, R.id.bundle_op2_type,
+                    R.id.bundle_op3_type }) {
+                ((Button)findViewById(buttonId)).setText(NONE_OP);
+            }
+            for (int textId : new int[] { R.id.bundle_op1_amount, R.id.bundle_op2_amount,
+                    R.id.bundle_op3_amount }) {
+                findViewById(textId).setVisibility(View.GONE);
+            }
         } else {
             ((EditText)findViewById(R.id.bundle_name_field)).setText(vb.caption);
             ((EditText)findViewById(R.id.bundle_value_field)).setText(String.valueOf(vb.mainValue));
@@ -156,15 +172,17 @@ public class BundleSettingsActivity extends AppCompatActivity {
 
     /**
      * Pops up a dialog for the user to choose a type of operation, then assigns that operation's symbol to a <code>Button</code>.
-     * @param viewId Must be the id of a <code>Button</code>.
+     * @param buttonId Must be the id of a <code>Button</code>.
+     * @param textId Must be the id of an <code>EditText</code>.
      */
-    protected void chooseOperationType(final int viewId) {
+    protected void chooseOperationType(final int buttonId, final int textId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose a type");
         builder.setItems(OPERATION_TYPES, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ((Button)findViewById(viewId)).setText(OPERATION_TYPES[which]);
+                ((Button)findViewById(buttonId)).setText(OPERATION_TYPES[which]);
+                findViewById(textId).setVisibility(which==OPERATION_TYPES.length-1 ? View.GONE : View.VISIBLE);
             }
         });
         builder.show();

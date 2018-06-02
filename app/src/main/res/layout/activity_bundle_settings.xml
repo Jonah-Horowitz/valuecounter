@@ -35,7 +35,8 @@
                     android:layout_height="match_parent"
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:imeOptions="flagNoExtractUi" />
 
             </LinearLayout>
 
@@ -58,7 +59,8 @@
                     android:layout_height="match_parent"
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:imeOptions="flagNoExtractUi" />
 
             </LinearLayout>
 
@@ -89,7 +91,8 @@
                     android:layout_height="match_parent"
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:imeOptions="flagNoExtractUi" />
 
             </LinearLayout>
 
@@ -120,7 +123,8 @@
                     android:layout_height="match_parent"
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:imeOptions="flagNoExtractUi" />
 
             </LinearLayout>
 
@@ -151,7 +155,8 @@
                     android:layout_height="match_parent"
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:imeOptions="flagNoExtractUi" />
 
             </LinearLayout>
 

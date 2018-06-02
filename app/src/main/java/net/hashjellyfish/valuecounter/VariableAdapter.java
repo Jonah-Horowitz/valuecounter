@@ -46,18 +46,24 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
             dataPosition = position;
             ((TextView)layoutHolder.findViewById(R.id.caption)).setText(vb.caption);
             ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(vb.mainValue));
-            if (vb.op1==null)
+            if (vb.op1==null) {
                 layoutHolder.findViewById(R.id.left_button).setVisibility(View.GONE);
-            else
+            } else {
+                layoutHolder.findViewById(R.id.left_button).setVisibility(View.VISIBLE);
                 ((Button)layoutHolder.findViewById(R.id.left_button)).setText(vb.op1.toString());
-            if (vb.op2==null)
+            }
+            if (vb.op2==null) {
                 layoutHolder.findViewById(R.id.left_middle_button).setVisibility(View.GONE);
-            else
+            } else {
+                layoutHolder.findViewById(R.id.left_middle_button).setVisibility(View.VISIBLE);
                 ((Button)layoutHolder.findViewById(R.id.left_middle_button)).setText(vb.op2.toString());
-            if (vb.op3==null)
+            }
+            if (vb.op3==null) {
                 layoutHolder.findViewById(R.id.right_middle_button).setVisibility(View.GONE);
-            else
+            } else {
+                layoutHolder.findViewById(R.id.right_middle_button).setVisibility(View.VISIBLE);
                 ((Button)layoutHolder.findViewById(R.id.right_middle_button)).setText(vb.op3.toString());
+            }
             currentData=vb;
             layoutHolder.findViewById(R.id.left_button).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,7 +95,6 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
             layoutHolder.findViewById(R.id.right_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
-//                    Snackbar.make(vv,"Settings button pressed on number "+getAdapterPosition(),Snackbar.LENGTH_LONG).setAction("Action",null).show();
                     Intent intent = new Intent(parentActivity, BundleSettingsActivity.class);
                     intent.putExtra("vbData",currentData);
                     intent.putExtra("dataPosition",dataPosition);

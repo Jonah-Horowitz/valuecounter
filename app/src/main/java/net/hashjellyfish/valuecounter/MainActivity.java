@@ -30,7 +30,7 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 public class MainActivity extends AppCompatActivity {
     public static final String DEFAULT_BUNDLES_LOCATION = (new File(System.getProperty("user.home")
             ,"valuecounter")).toString();
-    public static final String VALUE_BUNDLES_FILENAME = "valueBundles.json";
+    public static final String VALUE_BUNDLES_FILENAME = "valueBundles.sqlite";
 
     protected VariableAdapter main_list_adapter;
     protected static SharedPreferences localPrefs = null;

@@ -65,8 +65,6 @@ public class MainSettingsActivity extends AppCompatActivity {
      */
     protected void returnToMain() {
         finish();
-/*        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);/**/ // TODO: Remove this?
     }
 
     /**

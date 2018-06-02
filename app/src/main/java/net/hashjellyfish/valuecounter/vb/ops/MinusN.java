@@ -5,6 +5,8 @@ package net.hashjellyfish.valuecounter.vb.ops;
  */
 public class MinusN implements Operation<Integer,Integer>, Cloneable {
     private static final long serialVersionUID = 6372978879458320415L;
+    public static final String OP_ID = "-";
+
     private int n=0;
 
     /**
@@ -24,7 +26,7 @@ public class MinusN implements Operation<Integer,Integer>, Cloneable {
 
     @Override
     public String toString() {
-        return "-"+n;
+        return OP_ID+n;
     }
 
     @Override
@@ -34,6 +36,6 @@ public class MinusN implements Operation<Integer,Integer>, Cloneable {
 
     @Override
     public String opType() {
-        return "-";
+        return OP_ID;
     }
 }
