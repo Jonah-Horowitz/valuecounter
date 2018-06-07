@@ -11,4 +11,12 @@
     <string name="label_bundle_button1">Button 1:</string>
     <string name="label_bundle_button2">Button 2:</string>
     <string name="label_bundle_button3">Button 3:</string>
+    <string name="delete_button_label">Delete</string>
+    <string name="label_log_length">Log Length:</string>
+    <string name="settings_button_description">Settings</string>
+    <string name="button_1_how_much">Button 1: How much?</string>
+    <string name="button_2_how_much">Button 2: How much?</string>
+    <string name="button_3_how_much">Button 3: How much?</string>
+    <string name="view_log">View Log</string>
+    <string name="appname_settings">Value Counter: Settings</string>
 </resources>

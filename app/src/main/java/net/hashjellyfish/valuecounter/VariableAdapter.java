@@ -2,7 +2,6 @@ package net.hashjellyfish.valuecounter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.hashjellyfish.valuecounter.vb.VariableBundle;
+import net.hashjellyfish.valuecounter.vb.ops.Operation;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHolder> {
     public static final int BUNDLE_SETTINGS_RESULT_CODE = 39;
@@ -44,52 +44,49 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
         void setBundle(Activity context, int position, VariableBundle vb) {
             parentActivity = context;
             dataPosition = position;
-            ((TextView)layoutHolder.findViewById(R.id.caption)).setText(vb.caption);
-            ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(vb.mainValue));
-            if (vb.op1==null) {
+            ((TextView)layoutHolder.findViewById(R.id.caption)).setText(vb.getCaption());
+            ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(vb.getValue()));
+            Operation<Integer> op = vb.getOperation(1);
+            if (op==null) {
                 layoutHolder.findViewById(R.id.left_button).setVisibility(View.GONE);
             } else {
                 layoutHolder.findViewById(R.id.left_button).setVisibility(View.VISIBLE);
-                ((Button)layoutHolder.findViewById(R.id.left_button)).setText(vb.op1.toString());
+                ((Button)layoutHolder.findViewById(R.id.left_button)).setText(op.toString());
             }
-            if (vb.op2==null) {
+            op = vb.getOperation(2);
+            if (op==null) {
                 layoutHolder.findViewById(R.id.left_middle_button).setVisibility(View.GONE);
             } else {
                 layoutHolder.findViewById(R.id.left_middle_button).setVisibility(View.VISIBLE);
-                ((Button)layoutHolder.findViewById(R.id.left_middle_button)).setText(vb.op2.toString());
+                ((Button)layoutHolder.findViewById(R.id.left_middle_button)).setText(op.toString());
             }
-            if (vb.op3==null) {
+            op = vb.getOperation(3);
+            if (op==null) {
                 layoutHolder.findViewById(R.id.right_middle_button).setVisibility(View.GONE);
             } else {
                 layoutHolder.findViewById(R.id.right_middle_button).setVisibility(View.VISIBLE);
-                ((Button)layoutHolder.findViewById(R.id.right_middle_button)).setText(vb.op3.toString());
+                ((Button)layoutHolder.findViewById(R.id.right_middle_button)).setText(op.toString());
             }
             currentData=vb;
             layoutHolder.findViewById(R.id.left_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
-                    if (currentData.op1!=null) {
-                        currentData.mainValue = currentData.op1.apply(currentData.mainValue);
-                        ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.mainValue));
-                    }
+                    currentData.applyOperation(1);
+                    ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.getValue()));
                 }
             });
             layoutHolder.findViewById(R.id.left_middle_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
-                    if (currentData.op2!=null) {
-                        currentData.mainValue = currentData.op2.apply(currentData.mainValue);
-                        ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.mainValue));
-                    }
+                    currentData.applyOperation(2);
+                    ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.getValue()));
                 }
             });
             layoutHolder.findViewById(R.id.right_middle_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View vv) {
-                    if (currentData.op3!=null) {
-                        currentData.mainValue = currentData.op3.apply(currentData.mainValue);
-                        ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.mainValue));
-                    }
+                    currentData.applyOperation(3);
+                    ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.getValue()));
                 }
             });
             layoutHolder.findViewById(R.id.right_button).setOnClickListener(new View.OnClickListener() {
@@ -104,7 +101,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
         }
     }
 
-    protected List<VariableBundle> dataList;
+    protected ArrayList<VariableBundle> dataList;
     private Activity parentActivity;
 
     /**
@@ -112,7 +109,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
      * @param context Whichever <code>Activity</code> is using this <code>RecyclerView.Adapter</code>.
      * @param data The data to be displayed by this adapter.
      */
-    VariableAdapter(Activity context, List<VariableBundle> data) {
+    VariableAdapter(Activity context, ArrayList<VariableBundle> data) {
         dataList = data;
         parentActivity = context;
     }

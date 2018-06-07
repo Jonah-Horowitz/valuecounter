@@ -1,9 +1,11 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Subtracts a fixed value from the input.
  */
-public class MinusN implements Operation<Integer,Integer>, Cloneable {
+public class MinusN implements Operation<Integer>, Cloneable {
     private static final long serialVersionUID = 6372978879458320415L;
     public static final String OP_ID = "-";
 
@@ -20,7 +22,8 @@ public class MinusN implements Operation<Integer,Integer>, Cloneable {
     }
 
     @Override
-    public Integer apply(Integer target) {
+    @NotNull
+    public Integer apply(@NotNull Integer target) {
         return target-n;
     }
 
@@ -30,12 +33,19 @@ public class MinusN implements Operation<Integer,Integer>, Cloneable {
     }
 
     @Override
+    @NotNull
     public MinusN makeCopy() {
         return (new MinusN()).setValue(n);
     }
 
     @Override
+    @NotNull
     public String opType() {
         return OP_ID;
+    }
+
+    @Override
+    public Integer opAmount() {
+        return n;
     }
 }

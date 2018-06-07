@@ -1,9 +1,11 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Outputs a fixed value.
  */
-public class EqualsN implements Operation<Integer,Integer> {
+public class EqualsN implements Operation<Integer> {
     private static final long serialVersionUID = -9175502930396860316L;
     public static final String OP_ID = "=";
 
@@ -20,7 +22,8 @@ public class EqualsN implements Operation<Integer,Integer> {
     }
 
     @Override
-    public Integer apply(Integer target) {
+    @NotNull
+    public Integer apply(@NotNull Integer target) {
         return n;
     }
 
@@ -30,12 +33,19 @@ public class EqualsN implements Operation<Integer,Integer> {
     }
 
     @Override
+    @NotNull
     public EqualsN makeCopy() {
         return (new EqualsN()).setValue(n);
     }
 
     @Override
+    @NotNull
     public String opType() {
         return OP_ID;
+    }
+
+    @Override
+    public Integer opAmount() {
+        return n;
     }
 }

@@ -1,9 +1,11 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Multiplies inputs by a fixed number.
  */
-public class TimesN implements Operation<Integer,Integer> {
+public class TimesN implements Operation<Integer> {
     private static final long serialVersionUID = 8261435150568043500L;
     public static final String OP_ID = "x";
 
@@ -20,7 +22,8 @@ public class TimesN implements Operation<Integer,Integer> {
     }
 
     @Override
-    public Integer apply(Integer integer) {
+    @NotNull
+    public Integer apply(@NotNull Integer integer) {
         return integer*n;
     }
 
@@ -30,12 +33,19 @@ public class TimesN implements Operation<Integer,Integer> {
     }
 
     @Override
+    @NotNull
     public TimesN makeCopy() {
         return (new TimesN()).setValue(n);
     }
 
     @Override
+    @NotNull
     public String opType() {
         return OP_ID;
+    }
+
+    @Override
+    public Integer opAmount() {
+        return n;
     }
 }

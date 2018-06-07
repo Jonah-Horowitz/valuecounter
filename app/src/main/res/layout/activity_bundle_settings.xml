@@ -27,7 +27,8 @@
                     android:text="@string/label_bundle_name"
                     android:textStyle="bold"
                     android:textSize="@dimen/normal_font_size"
-                    android:layout_weight="0" />
+                    android:layout_weight="0"
+                    android:labelFor="@id/bundle_name_field"/>
 
                 <EditText
                     android:id="@+id/bundle_name_field"
@@ -51,7 +52,8 @@
                     android:text="@string/label_bundle_value"
                     android:textSize="@dimen/normal_font_size"
                     android:textStyle="bold"
-                    android:layout_weight="0" />
+                    android:layout_weight="0"
+                    android:labelFor="@id/bundle_value_field"/>
 
                 <EditText
                     android:id="@+id/bundle_value_field"
@@ -92,7 +94,8 @@
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
                     android:inputType="number"
-                    android:imeOptions="flagNoExtractUi" />
+                    android:imeOptions="flagNoExtractUi"
+                    android:hint="@string/button_1_how_much" />
 
             </LinearLayout>
 
@@ -124,7 +127,8 @@
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
                     android:inputType="number"
-                    android:imeOptions="flagNoExtractUi" />
+                    android:imeOptions="flagNoExtractUi"
+                    android:hint="@string/button_2_how_much" />
 
             </LinearLayout>
 
@@ -156,6 +160,32 @@
                     android:textSize="@dimen/normal_font_size"
                     android:layout_weight="1"
                     android:inputType="number"
+                    android:imeOptions="flagNoExtractUi"
+                    android:hint="@string/button_3_how_much" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/label_log_length"
+                    android:textSize="@dimen/normal_font_size"
+                    android:textStyle="bold"
+                    android:layout_weight="0"
+                    android:labelFor="@id/bundle_log_length"/>
+
+                <EditText
+                    android:id="@+id/bundle_log_length"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="@dimen/normal_font_size"
+                    android:layout_weight="1"
+                    android:inputType="number"
                     android:imeOptions="flagNoExtractUi" />
 
             </LinearLayout>
@@ -181,7 +211,23 @@
                     android:textSize="@dimen/large_font_size"
                     android:textStyle="bold"/>
 
+                <Button
+                    android:id="@+id/delete_bundle_settings_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/delete_button_label"
+                    android:textSize="@dimen/large_font_size"
+                    android:textStyle="bold" />
+
             </LinearLayout>
+
+            <Button
+                android:id="@+id/view_log_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/view_log"
+                android:textSize="@dimen/large_font_size"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
