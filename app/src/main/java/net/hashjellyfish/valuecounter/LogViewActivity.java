@@ -9,21 +9,17 @@ import android.widget.TextView;
 
 public class LogViewActivity extends AppCompatActivity {
 
-    private Bundle savedState = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_view);
 
-        CharSequence fullLog = "";
+        CharSequence fullLog;
         if (savedInstanceState==null) {
             Intent intent = getIntent();
             fullLog = TextUtils.join("\r\n", intent.getStringArrayListExtra("log"));
-            savedState = intent.getBundleExtra("savedState");
         } else {
             fullLog = savedInstanceState.getCharSequence("fullLog","");
-            savedState = savedInstanceState.getBundle("savedState");
         }
         ((TextView)findViewById(R.id.log_display)).setText(fullLog);
     }
@@ -32,7 +28,6 @@ public class LogViewActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putCharSequence("fullLog", ((TextView)findViewById(R.id.log_display)).getText());
-        outState.putBundle("savedState", savedState);
     }
 
     @Override

@@ -157,9 +157,6 @@ public class BundleSettingsActivity extends AppCompatActivity {
     private void displayLog() {
         Intent intent = new Intent(this, LogViewActivity.class);
         intent.putStringArrayListExtra("log", log);
-        Bundle bd = new Bundle();
-        includeInBundle(bd);
-        intent.putExtra("savedState",bd);
         startActivity(intent);
     }
 
