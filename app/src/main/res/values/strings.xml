@@ -19,4 +19,5 @@
     <string name="button_3_how_much">Button 3: How much?</string>
     <string name="view_log">View Log</string>
     <string name="appname_settings">Value Counter: Settings</string>
+    <string name="reset_to_default_label">Reset to Default</string>
 </resources>

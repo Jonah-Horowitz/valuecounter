@@ -30,10 +30,6 @@ public class VariableBundle implements Serializable {
     private int logLength = DEFAULT_LOG_LENGTH;
     @NotNull private ArrayList<String> log = new ArrayList<>();
 
-    public VariableBundle() {
-        // TODO: Make a real constructor?
-    }
-
     /**
      * Sets the id of this bundle.
      * @param id The new id.
@@ -196,39 +192,6 @@ public class VariableBundle implements Serializable {
     @NotNull
     public ArrayList<String> getLog() {
         return log;
-    }
-
-    public static ArrayList<VariableBundle> loadTestBundles() {
-        ArrayList<VariableBundle> tempList = new ArrayList<>();
-        VariableBundle v1 = new VariableBundle();
-        v1.caption = "Test1";
-        v1.op1 = (new PlusN()).setValue(3);
-        v1.op2 = (new MinusN()).setValue(1);
-        v1.op3 = (new PlusN()).setValue(1);
-        v1._id = 1;
-        tempList.add(v1);
-        VariableBundle v2 = v1.makeCopy();
-        v2.caption = "Test2";
-        v2.op1=null;
-        v2._id = 2;
-        tempList.add(v2);
-        VariableBundle v3 = v1.makeCopy();
-        v3.mainValue=7;
-        v3.caption="Test3";
-        v3._id = 3;
-        tempList.add(v3);
-        VariableBundle v4 = v1.makeCopy();
-        v4.caption = System.getProperty("user.home");
-        v4._id = 4;
-        tempList.add(v4);
-        VariableBundle v5 = v1.makeCopy();
-        v5._id = 5;
-        tempList.add(v5);
-        return tempList; // TODO: Remove this method.
-    }
-
-    public static VariableBundle makeTestBundle(Context ctx) {
-        return (new VariableBundle()).setCaption(ctx.getFilesDir().toString()).setValue(17).setOp(1,"x2"); // TODO: Remove this method.
     }
 
     /**

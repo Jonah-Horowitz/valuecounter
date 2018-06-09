@@ -216,9 +216,26 @@ public class BundleSettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * Deletes the bundle being edited.
+     * Deletes the bundle being edited, first popping up a dialog box to confirm.
      */
     private void deleteVB() {
+        AlertDialog.Builder bdr = new AlertDialog.Builder(this);
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which==DialogInterface.BUTTON_POSITIVE) {
+                    actuallyDeleteVB();
+                }
+            }
+        };
+        bdr.setMessage("This action cannot be undone. Are you sure?").setPositiveButton("Yes",
+                listener).setNegativeButton("No", listener).show();
+    }
+
+    /**
+     * Actually initiates deletion of this bundle, after the dialog box.
+     */
+    private void actuallyDeleteVB() {
         if (dataPosition==-1) {
             cancelVB();
         } else {

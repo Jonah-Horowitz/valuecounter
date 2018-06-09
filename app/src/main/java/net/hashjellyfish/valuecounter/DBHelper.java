@@ -8,7 +8,7 @@ import net.hashjellyfish.valuecounter.VBContract.VBEntry;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final int dbVersion = 1;
-    private static final String VALUE_BUNDLES_FILENAME = "valueBundles.sqlite";
+    protected static final String VALUE_BUNDLES_FILENAME = "valueCounter.sqlite";
     private static final String SQL_CREATE_TABLE = "CREATE TABLE "+ VBEntry.TABLE_NAME + " (" +
             VBEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + VBEntry.COLUMN_NAME_POSITION +
             " INTEGER," + VBEntry.COLUMN_NAME_CAPTION + " TEXT," + VBEntry.COLUMN_NAME_VALUE +

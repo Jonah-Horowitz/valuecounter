@@ -24,15 +24,23 @@ public class MainSettingsActivity extends AppCompatActivity {
 
         localPrefs = getDefaultSharedPreferences(this);
 
+        final String defLoc = getDatabasePath(DBHelper.VALUE_BUNDLES_FILENAME).toString();
         if (savedInstanceState==null) {
             ((TextView) findViewById(R.id.vb_location)).setText(localPrefs
-                    .getString("valueBundleLocation", MainActivity.DEFAULT_BUNDLES_LOCATION));
+                    .getString("valueBundleLocation", defLoc));
         } else {
             ((TextView)findViewById(R.id.vb_location)).setText(savedInstanceState
                     .getCharSequence("valueBundleLocation",localPrefs
                             .getString("valueBundleLocation",
-                                    MainActivity.DEFAULT_BUNDLES_LOCATION)).toString());
+                                    defLoc)).toString());
         }
+        findViewById(R.id.reset_to_default_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((TextView)findViewById(R.id.vb_location))
+                        .setText(defLoc);
+            }
+        });
         findViewById(R.id.select_location_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,6 +52,7 @@ public class MainSettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 transferProperties();
+                // TODO: Refresh the main list.
                 returnToMain();
             }
         });
@@ -101,8 +110,10 @@ public class MainSettingsActivity extends AppCompatActivity {
      */
     protected void transferProperties() {
         localPrefs.edit()
-                .putString("valueBundlesLocation",
+                .putString("valueBundleLocation",
                         ((TextView)findViewById(R.id.vb_location)).getText().toString())
                 .apply();
     }
+
+    // TODO: Include the choice to copy or move the list, or start a new one.
 }

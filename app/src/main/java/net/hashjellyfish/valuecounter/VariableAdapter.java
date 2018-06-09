@@ -24,7 +24,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
         private LinearLayout layoutHolder;
         private VariableBundle currentData = null;
         private int dataPosition = -1;
-        private Activity parentActivity = null;
+        private MainActivity parentActivity = null;
 
         /**
          * Creates a <code>RecyclerView.ViewHolder</code> specific to this type of <code>RecyclerView</code>.
@@ -41,7 +41,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
          * @param position The position of this holder's data in the adapter's <code>dataList</code>.
          * @param vb The <code>net.hashjellyfish.valuecouter.vb.VariableBundle</code> consisting of the data for this holder.
          */
-        void setBundle(Activity context, int position, VariableBundle vb) {
+        void setBundle(MainActivity context, final int position, VariableBundle vb) {
             parentActivity = context;
             dataPosition = position;
             ((TextView)layoutHolder.findViewById(R.id.caption)).setText(vb.getCaption());
@@ -72,6 +72,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
                 @Override
                 public void onClick(View vv) {
                     currentData.applyOperation(1);
+                    parentActivity.saveOneBundle(dataPosition, currentData);
                     ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.getValue()));
                 }
             });
@@ -79,6 +80,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
                 @Override
                 public void onClick(View vv) {
                     currentData.applyOperation(2);
+                    parentActivity.saveOneBundle(dataPosition, currentData);
                     ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.getValue()));
                 }
             });
@@ -86,6 +88,7 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
                 @Override
                 public void onClick(View vv) {
                     currentData.applyOperation(3);
+                    parentActivity.saveOneBundle(dataPosition, currentData);
                     ((TextView)layoutHolder.findViewById(R.id.value_display)).setText(String.valueOf(currentData.getValue()));
                 }
             });
@@ -102,14 +105,14 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
     }
 
     protected ArrayList<VariableBundle> dataList;
-    private Activity parentActivity;
+    private MainActivity parentActivity;
 
     /**
      * Creates an appropriate instance of <code>VariableAdapter</code>.
      * @param context Whichever <code>Activity</code> is using this <code>RecyclerView.Adapter</code>.
      * @param data The data to be displayed by this adapter.
      */
-    VariableAdapter(Activity context, ArrayList<VariableBundle> data) {
+    VariableAdapter(MainActivity context, ArrayList<VariableBundle> data) {
         dataList = data;
         parentActivity = context;
     }
