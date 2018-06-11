@@ -1,6 +1,7 @@
 package net.hashjellyfish.valuecounter;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,11 +36,13 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 31;
+    private static final int OPEN_DATABASE_LOCATION = 77;
 
     protected VariableAdapter main_list_adapter;
     protected static SharedPreferences localPrefs = null;
     public static DBHelper dbHelper = null;
     protected File defaultBundlesLocation;
+    protected File actualBundlesLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,13 +89,25 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            loadSettings();
+/*        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, MainSettingsActivity.class);
+            startActivity(intent);
             return true;
-        } else if (id == R.id.action_add) {
+        } else/**/ if (id == R.id.action_add) {
             Intent intent = new Intent(this, BundleSettingsActivity.class);
             intent.putExtra("vbData", (Serializable)null);
             startActivityForResult(intent, VariableAdapter.BUNDLE_SETTINGS_RESULT_CODE);
+            return true;
+        } else if (id == R.id.action_open_default_database) {
+            actualBundlesLocation = defaultBundlesLocation;
+            dbHelper.close();
+            dbHelper = null;
+            main_list_adapter.dataList = loadBundles();
+            main_list_adapter.notifyDataSetChanged();
+            return true;
+        } else if ((id == R.id.action_new_database) || (id == R.id.action_open_database)) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, OPEN_DATABASE_LOCATION);
             return true;
         }
 
@@ -133,6 +148,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+        } else if (requestCode==OPEN_DATABASE_LOCATION) {
+            if (resultCode==RESULT_OK) {
+                if (data.getDataString()!=null) {
+                    actualBundlesLocation = new File(data.getDataString(), DBHelper.VALUE_BUNDLES_FILENAME); // TODO: Find the file's location on disk, not the URI.
+                    localPrefs.edit().putString("valueBundleLocation", actualBundlesLocation.toString()).apply();
+                    dbHelper.close();
+                    dbHelper = null;
+                    main_list_adapter.dataList = loadBundles();
+                    main_list_adapter.notifyDataSetChanged();
+                }
+            }
         }
     }
 
@@ -146,20 +172,63 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int grantResults[]) {
         switch (requestCode) {
             case REQUEST_PERMISSIONS_CODE: {
-                checkPermissions(); // TODO: Set up the database here.
+                boolean allGranted = true;
+                for (int i = 0; i < permissions.length; i++) {
+                    if (grantResults[i]!=PackageManager.PERMISSION_GRANTED) {
+                        allGranted = false;
+                        break;
+                    }
+                }
+                if (allGranted) {
+                    main_list_adapter.dataList = loadBundles();
+                    main_list_adapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(this, "Cannot read from database without permission.", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
 
     @Override
     public File getDatabasePath(String name) {
-/*        if (name.equalsIgnoreCase(DBHelper.VALUE_BUNDLES_FILENAME)) {
-            return new File(localPrefs.getString("valueBundleLocation", defaultBundlesLocation.toString()));
-        }/**/ // TODO: Fix this (with permissions).
+        if (name.equalsIgnoreCase(DBHelper.VALUE_BUNDLES_FILENAME)) {
+            return actualBundlesLocation;
+        }/**/ // TODO: Fix this
         return super.getDatabasePath(name);
     }
 
-    // TODO: Make a "refresh list" method.
+    /**
+     * Determines if we are missing read/write permissions for external storage.
+     * @return <code>true</code> if either of those permissions is absent.
+     */
+    protected boolean needReadWritePermission() {
+        return (missingPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) || missingPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE));
+    }
+
+    /**
+     * Determines whether or not we have write permission for external storage.
+     * @param target The <code>Activity</code> which needs the permission.
+     * @param permission The permission being checked.
+     * @return Whether or not the relevant permission has already been granted to this <code>Activity</code>.
+     */
+    protected static boolean missingPermission(Activity target, String permission) {
+        return (ContextCompat.checkSelfPermission(target, permission) != PackageManager.PERMISSION_GRANTED);
+    }
+
+    /**
+     * Requests permissions to read/write external storage.
+     */
+    protected void requestReadWritePermissions() {
+        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_CODE);
+    }
+
+    /**
+     * Determines whether ot not the database currently in use is in internal storage.
+     * @return <code>true</code> if and only if we are currently using the default database location.
+     */
+    protected boolean usingExternalDatabase() {
+        return !actualBundlesLocation.toString().equalsIgnoreCase(defaultBundlesLocation.toString());
+    }
 
     /**
      * Loads the default <code>Properties</code> file or instantiates the defaults if the file
@@ -172,21 +241,7 @@ public class MainActivity extends AppCompatActivity {
                     .putString("valueBundleLocation",defaultBundlesLocation.toString())
                     .apply();
         }
-        if (!localPrefs.getString("valueBundleLocation",defaultBundlesLocation.toString()).equalsIgnoreCase(defaultBundlesLocation.toString())) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_CODE); // TODO: Maybe include an explanation.
-            } else {
-                checkPermissions(); // TODO: Set up the database here.
-            }
-        }
-    }
-
-    private void checkPermissions() { // TODO: Delete this method.
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "No permission for write access.", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Permissions for write access!", Toast.LENGTH_SHORT).show();
-        }
+        actualBundlesLocation = new File(localPrefs.getString("valueBundleLocation",defaultBundlesLocation.toString()));
     }
 
     /**
@@ -196,7 +251,11 @@ public class MainActivity extends AppCompatActivity {
      *                <code>storage</code> does not exist, is null, or is an empty file.
      */
     @NotNull
-    protected ArrayList<VariableBundle> loadBundles() { // TODO: Use the filename.
+    protected ArrayList<VariableBundle> loadBundles() {
+        if (usingExternalDatabase() && needReadWritePermission()) {
+            requestReadWritePermissions();
+            return new ArrayList<>();
+        }
         if (dbHelper==null) dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String[] projection = { VBEntry._ID, VBEntry.COLUMN_NAME_POSITION,
@@ -258,14 +317,6 @@ public class MainActivity extends AppCompatActivity {
             String[] selectionArgs = { String.valueOf(vb.getId()) };
             db.update(VBEntry.TABLE_NAME, vals, selection, selectionArgs);
         }
-    }
-
-    /**
-     * Intends to load the main settings <code>Activity</code> for this app.
-     */
-    protected void loadSettings() {
-        Intent intent = new Intent(this, MainSettingsActivity.class);
-        startActivity(intent);
     }
 
     // TODO: Allow for moving (reordering) bundles around.

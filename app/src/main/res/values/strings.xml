@@ -20,4 +20,7 @@
     <string name="view_log">View Log</string>
     <string name="appname_settings">Value Counter: Settings</string>
     <string name="reset_to_default_label">Reset to Default</string>
+    <string name="new_database">New Database</string>
+    <string name="open_database">Open Database</string>
+    <string name="open_default_database">Open Default Database</string>
 </resources>
