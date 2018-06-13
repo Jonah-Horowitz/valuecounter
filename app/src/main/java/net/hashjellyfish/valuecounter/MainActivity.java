@@ -2,15 +2,23 @@ package net.hashjellyfish.valuecounter;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentProviderResult;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -150,8 +158,9 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (requestCode==OPEN_DATABASE_LOCATION) {
             if (resultCode==RESULT_OK) {
-                if (data.getDataString()!=null) {
-                    actualBundlesLocation = new File(data.getDataString(), DBHelper.VALUE_BUNDLES_FILENAME); // TODO: Find the file's location on disk, not the URI.
+                if (data.getData()!=null) {
+                    File ext = new File(Environment.getExternalStorageDirectory(),data.getData().getPath().substring(("/tree/primary:").length()));
+                    actualBundlesLocation = new File(ext.getAbsoluteFile(), DBHelper.VALUE_BUNDLES_FILENAME);
                     localPrefs.edit().putString("valueBundleLocation", actualBundlesLocation.toString()).apply();
                     dbHelper.close();
                     dbHelper = null;
@@ -193,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
     public File getDatabasePath(String name) {
         if (name.equalsIgnoreCase(DBHelper.VALUE_BUNDLES_FILENAME)) {
             return actualBundlesLocation;
-        }/**/ // TODO: Fix this
+        }
         return super.getDatabasePath(name);
     }
 
