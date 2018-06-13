@@ -34,18 +34,7 @@ public class TimesN implements Operation<Integer> {
 
     @Override
     @NotNull
-    public TimesN makeCopy() {
-        return (new TimesN()).setValue(n);
-    }
-
-    @Override
-    @NotNull
     public String opType() {
         return OP_ID;
-    }
-
-    @Override
-    public Integer opAmount() {
-        return n;
     }
 }

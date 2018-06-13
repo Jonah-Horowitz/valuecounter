@@ -34,18 +34,7 @@ public class EqualsN implements Operation<Integer> {
 
     @Override
     @NotNull
-    public EqualsN makeCopy() {
-        return (new EqualsN()).setValue(n);
-    }
-
-    @Override
-    @NotNull
     public String opType() {
         return OP_ID;
-    }
-
-    @Override
-    public Integer opAmount() {
-        return n;
     }
 }

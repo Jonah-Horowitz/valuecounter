@@ -33,18 +33,7 @@ public class PlusN implements Operation<Integer> {
 
     @Override
     @NotNull
-    public PlusN makeCopy() {
-        return (new PlusN()).setValue(n);
-    }
-
-    @Override
-    @NotNull
     public String opType() {
         return OP_ID;
-    }
-
-    @Override
-    public Integer opAmount() {
-        return n;
     }
 }

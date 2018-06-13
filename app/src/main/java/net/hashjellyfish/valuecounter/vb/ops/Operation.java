@@ -18,22 +18,9 @@ public interface Operation<T> extends Serializable {
     T apply(@NotNull T target);
 
     /**
-     * Clones this <code>Operation</code>.
-     * @return An exact copy of this <code>Operation</code>.
-     */
-    @NotNull
-    Operation<T> makeCopy();
-
-    /**
      * Returns a string representation of the type of operation.
      * @return A static result, even though this is not a static method.
      */
     @NotNull
     String opType();
-
-    /**
-     * Returns the amount/quantity associated with this <code>Operation</code>.
-     * @return An integer.
-     */
-    T opAmount();
 }

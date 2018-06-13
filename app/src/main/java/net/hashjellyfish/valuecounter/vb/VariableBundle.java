@@ -1,6 +1,5 @@
 package net.hashjellyfish.valuecounter.vb;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 
 import net.hashjellyfish.valuecounter.vb.ops.EqualsN;
@@ -70,7 +69,7 @@ public class VariableBundle implements Serializable {
      * @return This bundle.
      */
     @NotNull
-    public VariableBundle setOp(int pos, @Nullable Operation<Integer> target) {
+    private VariableBundle setOp(int pos, @Nullable Operation<Integer> target) {
         switch (pos) {
             case 1: op1 = target; break;
             case 2: op2 = target; break;
@@ -134,7 +133,7 @@ public class VariableBundle implements Serializable {
      */
     @NotNull
     public VariableBundle setLog(@NotNull String[] newLog) {
-        return setLog(new ArrayList<String>(Arrays.asList(newLog)));
+        return setLog(new ArrayList<>(Arrays.asList(newLog)));
     }
 
     /**
@@ -201,7 +200,7 @@ public class VariableBundle implements Serializable {
      * @return An instance of a class extending <code>Operation</code>, or null if the <code>type</code> is not recognized.
      */
     @Nullable
-    public static Operation<Integer> parseOperation(@Nullable String type, @Nullable String value) {
+    private static Operation<Integer> parseOperation(@Nullable String type, @Nullable String value) {
         if (type==null || value==null) return null;
         int val = value.length()==0 ? 0 : Integer.parseInt(value);
         switch (type) {
@@ -227,25 +226,9 @@ public class VariableBundle implements Serializable {
      * @return An instance of a class extending <code>Operation</code>, or null if the <code>type</code> is not recognized.
      */
     @Nullable
-    public static Operation<Integer> parseOperation(@Nullable String description) {
+    private static Operation<Integer> parseOperation(@Nullable String description) {
         if (description==null) return null;
         return parseOperation(description.substring(0,1),description.substring(1));
-    }
-
-    /**
-     * Creates a deep copy of this <code>VariableBundle</code>.
-     * @return The deep copy of this.
-     */
-    @NotNull
-    private VariableBundle makeCopy() {
-        VariableBundle v = new VariableBundle();
-        v._id = this._id;
-        v.caption = this.caption;
-        v.mainValue = this.mainValue;
-        v.op1 = this.op1==null ? null : this.op1.makeCopy();
-        v.op2 = this.op2==null ? null : this.op2.makeCopy();
-        v.op3 = this.op3==null ? null : this.op3.makeCopy();
-        return v;
     }
 
     /**
@@ -262,7 +245,7 @@ public class VariableBundle implements Serializable {
      * Adds the given <code>String</code> to the beginning of this bundle's log.
      * @param newLine The new line to be included.
      */
-    public void addToLog(@NotNull String newLine) {
+    private void addToLog(@NotNull String newLine) {
         log.add(0,newLine);
         cullLog();
     }
@@ -299,7 +282,7 @@ public class VariableBundle implements Serializable {
      * @return The log entry for the application.
      */
     @NotNull
-    public static String formatLogEntry(int oldValue, String op) {
+    private static String formatLogEntry(int oldValue, String op) {
         return String.valueOf(oldValue) + "\t" + op + "\t" + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
     }
 }

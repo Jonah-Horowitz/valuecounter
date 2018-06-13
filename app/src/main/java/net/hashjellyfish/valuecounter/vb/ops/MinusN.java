@@ -34,18 +34,7 @@ public class MinusN implements Operation<Integer>, Cloneable {
 
     @Override
     @NotNull
-    public MinusN makeCopy() {
-        return (new MinusN()).setValue(n);
-    }
-
-    @Override
-    @NotNull
     public String opType() {
         return OP_ID;
-    }
-
-    @Override
-    public Integer opAmount() {
-        return n;
     }
 }
