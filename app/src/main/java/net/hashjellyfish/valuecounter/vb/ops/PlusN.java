@@ -1,6 +1,6 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
-import org.jetbrains.annotations.NotNull;
+import android.support.annotation.NonNull;
 
 /**
  * Adds a fixed value to the input.
@@ -21,8 +21,8 @@ public class PlusN implements Operation<Integer> {
     }
 
     @Override
-    @NotNull
-    public Integer apply(@NotNull Integer integer) {
+    @NonNull
+    public Integer apply(@NonNull Integer integer) {
         return integer+n;
     }
 
@@ -32,7 +32,7 @@ public class PlusN implements Operation<Integer> {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public String opType() {
         return OP_ID;
     }

@@ -4,13 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
+/**
+ * Allows the user to edit any settings which are independent of any <code>VariableBundle</code>.
+ * Note: This is currently not usable since there are no such settings, but it is not being deleted because such settings are anticipated again in future.
+ */
 public class MainSettingsActivity extends AppCompatActivity {
 
     protected static final int READ_REQUEST_CODE = 17;

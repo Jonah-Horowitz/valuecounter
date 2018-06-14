@@ -32,4 +32,10 @@
         android:orderInCategory="85"
         android:title="@string/open_default_database"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_display_database_location"
+        android:orderInCategory="90"
+        android:title="@string/database_location"
+        app:showAsAction="never" />
 </menu>

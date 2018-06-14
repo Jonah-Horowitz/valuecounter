@@ -1,6 +1,7 @@
 package net.hashjellyfish.valuecounter;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +13,11 @@ import android.widget.TextView;
 import net.hashjellyfish.valuecounter.vb.VariableBundle;
 import net.hashjellyfish.valuecounter.vb.ops.Operation;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 
+/**
+ * An adapter for the primary <code>RecyclerView</code> in <code>MainActivity</code>.
+ */
 public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHolder> {
     public static final int BUNDLE_SETTINGS_RESULT_CODE = 39;
 
@@ -117,14 +119,14 @@ public class VariableAdapter extends RecyclerView.Adapter<VariableAdapter.ViewHo
     }
 
     @Override
-    @NotNull
-    public VariableAdapter.ViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
+    @NonNull
+    public VariableAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.variable_bundle_view, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NotNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.setBundle(parentActivity, position, dataList.get(position));
     }
 

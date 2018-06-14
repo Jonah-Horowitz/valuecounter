@@ -7,6 +7,10 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+/**
+ * Extremely simple <code>Activity</code> which allows the user to view the existing log for a
+ * particular <code>VariableBundle</code>.
+ */
 public class LogViewActivity extends AppCompatActivity {
 
     @Override
@@ -21,7 +25,12 @@ public class LogViewActivity extends AppCompatActivity {
         } else {
             fullLog = savedInstanceState.getCharSequence("fullLog","");
         }
-        ((TextView)findViewById(R.id.log_display)).setText(fullLog);
+        if (fullLog.length()==0) {
+            TextView tv = findViewById(R.id.log_display);
+            tv.setText(R.string.empty_log);
+        } else {
+            ((TextView) findViewById(R.id.log_display)).setText(fullLog);
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.hashjellyfish.valuecounter;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,26 +20,31 @@ import net.hashjellyfish.valuecounter.vb.ops.Operation;
 import net.hashjellyfish.valuecounter.vb.ops.PlusN;
 import net.hashjellyfish.valuecounter.vb.ops.TimesN;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 
+/**
+ * Allows the user to directly change information in a <code>VariableBundle</code>, create a new
+ * <code>VariableBundle</code>, or delete one that is no longer wanted.
+ */
 public class BundleSettingsActivity extends AppCompatActivity {
-    public static final String NONE_OP = "None";
-    public static final String[] OPERATION_TYPES = new String[] { PlusN.OP_ID, MinusN.OP_ID,
-            TimesN.OP_ID, EqualsN.OP_ID, NONE_OP };
     public static final int ADD_INSTRUCTION = 1;
     public static final int DELETE_INSTRUCTION = 2;
 
+    private String noneOp;
+    private String[] operationTypes = new String[] { PlusN.OP_ID, MinusN.OP_ID,
+            TimesN.OP_ID, EqualsN.OP_ID, null };
     private int dataPosition;
     @Nullable private Integer originalValue = null;
     private long id = -1L;
-    @NotNull private ArrayList<String> log = new ArrayList<>();
+    @NonNull private ArrayList<String> log = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bundle_settings);
+
+        noneOp = getString(R.string.none_op);
+        operationTypes[operationTypes.length-1] = noneOp;
 
         if (savedInstanceState==null) {
             Intent intent = getIntent();
@@ -57,7 +63,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
             ((EditText)findViewById(R.id.bundle_value_field)).setText(savedInstanceState.getCharSequence("value"));
             CharSequence opType = savedInstanceState.getCharSequence("op1Type");
             ((Button)findViewById(R.id.bundle_op1_type)).setText(opType);
-            if (opType!=null && NONE_OP.contentEquals(opType)) {
+            if (opType!=null && noneOp.contentEquals(opType)) {
                 findViewById(R.id.bundle_op1_amount).setVisibility(View.GONE);
             } else {
                 findViewById(R.id.bundle_op1_amount).setVisibility(View.VISIBLE);
@@ -65,7 +71,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
             ((EditText)findViewById(R.id.bundle_op1_amount)).setText(savedInstanceState.getCharSequence("op1Amount"));
             opType = savedInstanceState.getCharSequence("op2Type");
             ((Button)findViewById(R.id.bundle_op2_type)).setText(opType);
-            if (opType!=null && NONE_OP.contentEquals(opType)) {
+            if (opType!=null && noneOp.contentEquals(opType)) {
                 findViewById(R.id.bundle_op2_amount).setVisibility(View.GONE);
             } else {
                 findViewById(R.id.bundle_op2_amount).setVisibility(View.VISIBLE);
@@ -73,7 +79,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
             ((EditText)findViewById(R.id.bundle_op2_amount)).setText(savedInstanceState.getCharSequence("op2Amount"));
             opType = savedInstanceState.getCharSequence("op3Type");
             ((Button)findViewById(R.id.bundle_op3_type)).setText(opType);
-            if (opType!=null && NONE_OP.contentEquals(opType)) {
+            if (opType!=null && noneOp.contentEquals(opType)) {
                 findViewById(R.id.bundle_op3_amount).setVisibility(View.GONE);
             } else {
                 findViewById(R.id.bundle_op3_amount).setVisibility(View.VISIBLE);
@@ -165,13 +171,14 @@ public class BundleSettingsActivity extends AppCompatActivity {
      * @param e The caught <code>NumberFormatException</code>.
      */
     private void displayError(NumberFormatException e) {
-        Toast.makeText(this, "You must enter an integer: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.error_enter_integer, e.getMessage()), Toast.LENGTH_LONG).show();
     }
 
     /**
      * Turns the data in the various fields of this activity into a <code>VariableBundle</code>.
      * @return A <code>VariableBundle</code> consisting of the information in this <code>Activity</code>.
      */
+    @NonNull
     private VariableBundle makeVB() {
         int newValue = Integer.parseInt(((EditText)findViewById(R.id.bundle_value_field)).getText().toString());
         VariableBundle temp = (new VariableBundle())
@@ -228,8 +235,8 @@ public class BundleSettingsActivity extends AppCompatActivity {
                 }
             }
         };
-        bdr.setMessage("This action cannot be undone. Are you sure?").setPositiveButton("Yes",
-                listener).setNegativeButton("No", listener).show();
+        bdr.setMessage(R.string.cannot_undo).setPositiveButton(R.string.yes,
+                listener).setNegativeButton(R.string.no, listener).show();
     }
 
     /**
@@ -269,7 +276,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
         if (vb==null) {
             for (int buttonId : new int[] { R.id.bundle_op1_type, R.id.bundle_op2_type,
                     R.id.bundle_op3_type }) {
-                ((Button)findViewById(buttonId)).setText(NONE_OP);
+                ((Button)findViewById(buttonId)).setText(noneOp);
             }
             for (int textId : new int[] { R.id.bundle_op1_amount, R.id.bundle_op2_amount,
                     R.id.bundle_op3_amount }) {
@@ -281,7 +288,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
             ((EditText)findViewById(R.id.bundle_value_field)).setText(String.valueOf(vb.getValue()));
             Operation<Integer> op = vb.getOperation(1);
             if (op==null) {
-                ((Button)findViewById(R.id.bundle_op1_type)).setText(NONE_OP);
+                ((Button)findViewById(R.id.bundle_op1_type)).setText(noneOp);
                 findViewById(R.id.bundle_op1_amount).setVisibility(View.GONE);
             } else {
                 ((Button)findViewById(R.id.bundle_op1_type)).setText(op.opType());
@@ -291,7 +298,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
             }
             op = vb.getOperation(2);
             if (op==null) {
-                ((Button)findViewById(R.id.bundle_op2_type)).setText(NONE_OP);
+                ((Button)findViewById(R.id.bundle_op2_type)).setText(noneOp);
                 findViewById(R.id.bundle_op2_amount).setVisibility(View.GONE);
             } else {
                 ((Button)findViewById(R.id.bundle_op2_type)).setText(op.opType());
@@ -301,7 +308,7 @@ public class BundleSettingsActivity extends AppCompatActivity {
             }
             op = vb.getOperation(3);
             if (op==null) {
-                ((Button)findViewById(R.id.bundle_op3_type)).setText(NONE_OP);
+                ((Button)findViewById(R.id.bundle_op3_type)).setText(noneOp);
                 findViewById(R.id.bundle_op3_amount).setVisibility(View.GONE);
             } else {
                 ((Button)findViewById(R.id.bundle_op3_type)).setText(op.opType());
@@ -320,12 +327,12 @@ public class BundleSettingsActivity extends AppCompatActivity {
      */
     protected void chooseOperationType(final int buttonId, final int textId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose a type");
-        builder.setItems(OPERATION_TYPES, new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.choose_op_type);
+        builder.setItems(operationTypes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ((Button)findViewById(buttonId)).setText(OPERATION_TYPES[which]);
-                findViewById(textId).setVisibility(which==OPERATION_TYPES.length-1 ? View.GONE : View.VISIBLE);
+                ((Button)findViewById(buttonId)).setText(operationTypes[which]);
+                findViewById(textId).setVisibility(which== operationTypes.length-1 ? View.GONE : View.VISIBLE);
             }
         });
         builder.show();

@@ -10,6 +10,6 @@
         android:id="@+id/log_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/small_font_size"/>
+        android:textSize="@dimen/normal_font_size"/>
 
 </android.support.constraint.ConstraintLayout>

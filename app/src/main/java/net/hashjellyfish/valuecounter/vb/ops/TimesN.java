@@ -1,6 +1,6 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
-import org.jetbrains.annotations.NotNull;
+import android.support.annotation.NonNull;
 
 /**
  * Multiplies inputs by a fixed number.
@@ -22,8 +22,8 @@ public class TimesN implements Operation<Integer> {
     }
 
     @Override
-    @NotNull
-    public Integer apply(@NotNull Integer integer) {
+    @NonNull
+    public Integer apply(@NonNull Integer integer) {
         return integer*n;
     }
 
@@ -33,7 +33,7 @@ public class TimesN implements Operation<Integer> {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public String opType() {
         return OP_ID;
     }

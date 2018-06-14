@@ -1,6 +1,6 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
-import org.jetbrains.annotations.NotNull;
+import android.support.annotation.NonNull;
 
 /**
  * Outputs a fixed value.
@@ -22,8 +22,8 @@ public class EqualsN implements Operation<Integer> {
     }
 
     @Override
-    @NotNull
-    public Integer apply(@NotNull Integer target) {
+    @NonNull
+    public Integer apply(@NonNull Integer target) {
         return n;
     }
 
@@ -33,7 +33,7 @@ public class EqualsN implements Operation<Integer> {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public String opType() {
         return OP_ID;
     }

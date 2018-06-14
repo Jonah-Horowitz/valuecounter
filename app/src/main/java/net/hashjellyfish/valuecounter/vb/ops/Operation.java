@@ -1,6 +1,6 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
-import org.jetbrains.annotations.NotNull;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
@@ -14,13 +14,13 @@ public interface Operation<T> extends Serializable {
      * @param target The input for this <code>Operation</code>'s application.
      * @return The output associated with the given input.
      */
-    @NotNull
-    T apply(@NotNull T target);
+    @NonNull
+    T apply(@NonNull T target);
 
     /**
      * Returns a string representation of the type of operation.
      * @return A static result, even though this is not a static method.
      */
-    @NotNull
+    @NonNull
     String opType();
 }

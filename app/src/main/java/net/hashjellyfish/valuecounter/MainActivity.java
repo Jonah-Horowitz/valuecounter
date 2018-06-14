@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,15 +30,19 @@ import net.hashjellyfish.valuecounter.vb.VariableBundle;
 import net.hashjellyfish.valuecounter.VBContract.VBEntry;
 import net.hashjellyfish.valuecounter.vb.ops.Operation;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
+/**
+ * Activity in which the user can view all stored <code>VariableBundle</code>s as well as switch
+ * between databases or switch to other activities in this app.
+ */
 public class MainActivity extends AppCompatActivity {
+    private static final String URI_PATH_PREFIX = "/tree/primary:";
+
     private static final int REQUEST_PERMISSIONS_CODE = 31;
     private static final int OPEN_DATABASE_LOCATION = 77;
 
@@ -93,22 +100,31 @@ public class MainActivity extends AppCompatActivity {
 /*        if (id == R.id.action_settings) {
             Intent intent = new Intent(this, MainSettingsActivity.class);
             startActivity(intent);
-            return true;
+            return true; // TODO: Reinstate this when there are settings to be altered.
         } else/**/ if (id == R.id.action_add) {
-            Intent intent = new Intent(this, BundleSettingsActivity.class);
-            intent.putExtra("vbData", (Serializable)null);
-            startActivityForResult(intent, VariableAdapter.BUNDLE_SETTINGS_RESULT_CODE);
+            if (dbHelper==null) {
+                Toast.makeText(this, R.string.error_no_load_no_save, Toast.LENGTH_LONG).show();
+            } else {
+                Intent intent = new Intent(this, BundleSettingsActivity.class);
+                intent.putExtra("vbData", (Serializable) null);
+                startActivityForResult(intent, VariableAdapter.BUNDLE_SETTINGS_RESULT_CODE);
+            }
             return true;
         } else if (id == R.id.action_open_default_database) {
-            actualBundlesLocation = defaultBundlesLocation;
-            dbHelper.close();
-            dbHelper = null;
-            main_list_adapter.dataList = loadBundles();
-            main_list_adapter.notifyDataSetChanged();
+            newOrOpen(defaultBundlesLocation);
             return true;
         } else if ((id == R.id.action_new_database) || (id == R.id.action_open_database)) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             startActivityForResult(intent, OPEN_DATABASE_LOCATION);
+            return true;
+        } else if (id == R.id.action_display_database_location) {
+            if (dbHelper==null) {
+                Toast.makeText(this, R.string.database_unreadable, Toast.LENGTH_LONG).show();
+            } else if (defaultBundlesLocation.equals(actualBundlesLocation)) {
+                Toast.makeText(this, R.string.default_database_location, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, actualBundlesLocation.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            }
             return true;
         }
 
@@ -122,21 +138,29 @@ public class MainActivity extends AppCompatActivity {
                 int dataPos = data.getIntExtra("dataPosition", -1);
                 switch (data.getIntExtra("instruction", 0)) {
                     case BundleSettingsActivity.ADD_INSTRUCTION: {
-                        VariableBundle vb = (VariableBundle) data.getSerializableExtra("vbData");
-                        saveOneBundle(main_list_adapter.dataList.size() - 1, vb);
-                        main_list_adapter.dataList.add(vb);
-                        main_list_adapter.notifyDataSetChanged();
+                        if (dbHelper==null) {
+                            Toast.makeText(this, R.string.error_no_load_no_save, Toast.LENGTH_LONG).show();
+                        } else {
+                            VariableBundle vb = (VariableBundle) data.getSerializableExtra("vbData");
+                            saveOneBundle(main_list_adapter.dataList.size() - 1, vb);
+                            main_list_adapter.dataList.add(vb);
+                            main_list_adapter.notifyDataSetChanged();
+                        }
                         break;
                     }
                     case BundleSettingsActivity.DELETE_INSTRUCTION: {
                         VariableBundle vb = main_list_adapter.dataList.remove(dataPos);
                         main_list_adapter.notifyDataSetChanged();
-                        SQLiteDatabase db = dbHelper.getWritableDatabase();
-                        db.delete(VBEntry.TABLE_NAME, VBEntry._ID+"=?",new String[]
-                                {String.valueOf(vb.getId())});
-                        main_list_adapter.notifyDataSetChanged();
-                        for (int i = dataPos; i < main_list_adapter.dataList.size(); i++) {
-                            saveOneBundle(i, main_list_adapter.dataList.get(i), db);
+                        if (dbHelper==null) {
+                            Toast.makeText(this, R.string.error_no_load_no_delete, Toast.LENGTH_LONG).show();
+                        } else {
+                            SQLiteDatabase db = dbHelper.getWritableDatabase();
+                            db.delete(VBContract.TABLE_NAME, VBEntry._ID + "=?", new String[]
+                                    {String.valueOf(vb.getId())});
+                            main_list_adapter.notifyDataSetChanged();
+                            for (int i = dataPos; i < main_list_adapter.dataList.size(); i++) {
+                                saveOneBundle(i, main_list_adapter.dataList.get(i), db);
+                            }
                         }
                         break;
                     }
@@ -151,17 +175,32 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (requestCode==OPEN_DATABASE_LOCATION) {
             if (resultCode==RESULT_OK) {
-                if (data.getData()!=null) {
-                    File ext = new File(Environment.getExternalStorageDirectory(),data.getData().getPath().substring(("/tree/primary:").length()));
-                    actualBundlesLocation = new File(ext.getAbsoluteFile(), DBHelper.VALUE_BUNDLES_FILENAME);
-                    localPrefs.edit().putString("valueBundleLocation", actualBundlesLocation.toString()).apply();
-                    dbHelper.close();
-                    dbHelper = null;
-                    main_list_adapter.dataList = loadBundles();
-                    main_list_adapter.notifyDataSetChanged();
+                Uri loc = data.getData();
+                if (loc!=null) {
+                    if (!loc.getPath().startsWith(URI_PATH_PREFIX)) {
+                        Toast.makeText(this, R.string.error_no_resolve_location, Toast.LENGTH_LONG).show();
+                    } else {
+                        File ext = new File(Environment.getExternalStorageDirectory(), loc.getPath().substring(URI_PATH_PREFIX.length()));
+                        newOrOpen(new File(ext.getAbsoluteFile(), DBHelper.VALUE_BUNDLES_FILENAME));
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Opens the specified database, creating it if necessary.
+     * @param newLocation Must either be nonexistant or point to a valid valueCounter database.
+     */
+    private void newOrOpen(@NonNull File newLocation) {
+        actualBundlesLocation = newLocation;
+        localPrefs.edit().putString("valueBundleLocation", newLocation.toString()).apply();
+        if (dbHelper!=null) {
+            dbHelper.close();
+        }
+        dbHelper = null;
+        main_list_adapter.dataList = loadBundles();
+        main_list_adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -171,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int grantResults[]) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int grantResults[]) {
         switch (requestCode) {
             case REQUEST_PERMISSIONS_CODE: {
                 boolean allGranted = true;
@@ -185,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                     main_list_adapter.dataList = loadBundles();
                     main_list_adapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(this, "Cannot read from database without permission.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.error_no_permission, Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -252,20 +291,27 @@ public class MainActivity extends AppCompatActivity {
      * @return An <code>ArrayList</code> of <code>VariableBundle</code>s. This will be empty if
      *                <code>storage</code> does not exist, is null, or is an empty file.
      */
-    @NotNull
+    @NonNull
     protected ArrayList<VariableBundle> loadBundles() {
         if (usingExternalDatabase() && needReadWritePermission()) {
             requestReadWritePermissions();
             return new ArrayList<>();
         }
-        if (dbHelper==null) dbHelper = new DBHelper(this);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db;
+        try {
+            DBHelper temp = (dbHelper==null) ? new DBHelper(this) : dbHelper;
+            db = temp.getReadableDatabase();
+            dbHelper = temp;
+        } catch (SQLException e) {
+            Toast.makeText(this, R.string.error_no_read, Toast.LENGTH_LONG).show();
+            return new ArrayList<>();
+        }
         String[] projection = { VBEntry._ID, VBEntry.COLUMN_NAME_POSITION,
                 VBEntry.COLUMN_NAME_CAPTION, VBEntry.COLUMN_NAME_VALUE, VBEntry.COLUMN_NAME_OP1,
                 VBEntry.COLUMN_NAME_OP2, VBEntry.COLUMN_NAME_OP3, VBEntry.COLUMN_NAME_LOG_LENGTH,
                 VBEntry.COLUMN_NAME_LOG };
         String sortOrder = VBEntry.COLUMN_NAME_POSITION + " ASC";
-        Cursor cursor = db.query(VBEntry.TABLE_NAME, projection, null, null,
+        Cursor cursor = db.query(VBContract.TABLE_NAME, projection, null, null,
                 null, null, sortOrder);
         ArrayList<VariableBundle> bundles = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -290,7 +336,11 @@ public class MainActivity extends AppCompatActivity {
      * @param vb The bundle to be updated or added.
      */
     protected void saveOneBundle(int pos, VariableBundle vb) {
-        saveOneBundle(pos, vb, dbHelper.getWritableDatabase());
+        if (dbHelper==null) {
+            Toast.makeText(this, R.string.error_no_load_no_save, Toast.LENGTH_LONG).show();
+        } else {
+            saveOneBundle(pos, vb, dbHelper.getWritableDatabase());
+        }
     }
 
     /**
@@ -313,11 +363,11 @@ public class MainActivity extends AppCompatActivity {
         vals.put(VBEntry.COLUMN_NAME_LOG_LENGTH, vb.getLogLength());
         vals.put(VBEntry.COLUMN_NAME_LOG, TextUtils.join("\r\n", vb.getLog()));
         if (vb.getId()==-1) {
-            vb.setId(db.insert(VBEntry.TABLE_NAME, null, vals));
+            vb.setId(db.insert(VBContract.TABLE_NAME, null, vals));
         } else {
             String selection = VBEntry._ID + "=?";
             String[] selectionArgs = { String.valueOf(vb.getId()) };
-            db.update(VBEntry.TABLE_NAME, vals, selection, selectionArgs);
+            db.update(VBContract.TABLE_NAME, vals, selection, selectionArgs);
         }
     }
 

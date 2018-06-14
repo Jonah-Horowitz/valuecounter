@@ -5,11 +5,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import net.hashjellyfish.valuecounter.VBContract.VBEntry;
 
+/**
+ * Helper to manage the SQL database for valueCounter.
+ */
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final int dbVersion = 1;
     protected static final String VALUE_BUNDLES_FILENAME = "valueCounter.sqlite";
-    private static final String SQL_CREATE_TABLE = "CREATE TABLE "+ VBEntry.TABLE_NAME + " (" +
+    private static final String SQL_CREATE_TABLE = "CREATE TABLE "+ VBContract.TABLE_NAME + " (" +
             VBEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + VBEntry.COLUMN_NAME_POSITION +
             " INTEGER," + VBEntry.COLUMN_NAME_CAPTION + " TEXT," + VBEntry.COLUMN_NAME_VALUE +
             " INTEGER," + VBEntry.COLUMN_NAME_OP1 + " TEXT," + VBEntry.COLUMN_NAME_OP2 + " TEXT," +

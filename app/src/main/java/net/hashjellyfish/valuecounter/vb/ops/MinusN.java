@@ -1,6 +1,6 @@
 package net.hashjellyfish.valuecounter.vb.ops;
 
-import org.jetbrains.annotations.NotNull;
+import android.support.annotation.NonNull;
 
 /**
  * Subtracts a fixed value from the input.
@@ -22,8 +22,8 @@ public class MinusN implements Operation<Integer>, Cloneable {
     }
 
     @Override
-    @NotNull
-    public Integer apply(@NotNull Integer target) {
+    @NonNull
+    public Integer apply(@NonNull Integer target) {
         return target-n;
     }
 
@@ -33,7 +33,7 @@ public class MinusN implements Operation<Integer>, Cloneable {
     }
 
     @Override
-    @NotNull
+    @NonNull
     public String opType() {
         return OP_ID;
     }

@@ -1,5 +1,6 @@
 package net.hashjellyfish.valuecounter.vb;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import net.hashjellyfish.valuecounter.vb.ops.EqualsN;
@@ -8,7 +9,6 @@ import net.hashjellyfish.valuecounter.vb.ops.Operation;
 import net.hashjellyfish.valuecounter.vb.ops.PlusN;
 import net.hashjellyfish.valuecounter.vb.ops.TimesN;
 
-import org.jetbrains.annotations.NotNull;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
@@ -16,25 +16,29 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Represents a stored numeric (integer) variable, together with a name for the variable, three
+ * unary operations on the variable, and a log of recent changes to the variable.
+ */
 public class VariableBundle implements Serializable {
     private static final long serialVersionUID = 6353897323909559255L;
     public static final int DEFAULT_LOG_LENGTH = 10;
 
     private long _id = -1;
-    @NotNull private String caption = "";
+    @NonNull private String caption = "";
     private int mainValue = 0;
     @Nullable private Operation<Integer> op1 = null;
     @Nullable private Operation<Integer> op2 = null;
     @Nullable private Operation<Integer> op3 = null;
     private int logLength = DEFAULT_LOG_LENGTH;
-    @NotNull private ArrayList<String> log = new ArrayList<>();
+    @NonNull private ArrayList<String> log = new ArrayList<>();
 
     /**
      * Sets the id of this bundle.
      * @param id The new id.
      * @return This bundle.
      */
-    @NotNull
+    @NonNull
     public VariableBundle setId(long id) {
         _id = id;
         return this;
@@ -45,8 +49,8 @@ public class VariableBundle implements Serializable {
      * @param target The new caption.
      * @return This bundle.
      */
-    @NotNull
-    public VariableBundle setCaption(@NotNull String target) {
+    @NonNull
+    public VariableBundle setCaption(@NonNull String target) {
         caption = target;
         return this;
     }
@@ -56,7 +60,7 @@ public class VariableBundle implements Serializable {
      * @param value The new value.
      * @return This bundle.
      */
-    @NotNull
+    @NonNull
     public VariableBundle setValue(int value) {
         mainValue = value;
         return this;
@@ -68,7 +72,7 @@ public class VariableBundle implements Serializable {
      * @param target The new <code>Operation</code>.
      * @return This bundle.
      */
-    @NotNull
+    @NonNull
     private VariableBundle setOp(int pos, @Nullable Operation<Integer> target) {
         switch (pos) {
             case 1: op1 = target; break;
@@ -85,7 +89,7 @@ public class VariableBundle implements Serializable {
      * @param desc The description of the new <code>Operation</code>.
      * @return This bundle.
      */
-    @NotNull
+    @NonNull
     public VariableBundle setOp(int pos, @Nullable String desc) {
         return setOp(pos, parseOperation(desc));
     }
@@ -97,7 +101,7 @@ public class VariableBundle implements Serializable {
      * @param value The numerical value of the new <code>Operation</code>.
      * @return This bundle.
      */
-    @NotNull
+    @NonNull
     public VariableBundle setOp(int pos, @Nullable String type, @Nullable String value) {
         return setOp(pos, parseOperation(type, value));
     }
@@ -107,7 +111,7 @@ public class VariableBundle implements Serializable {
      * @param length The new length of the log.
      * @return This bundle.
      */
-    @NotNull
+    @NonNull
     public VariableBundle setLogLength(int length) {
         logLength = length;
         cullLog();
@@ -119,8 +123,8 @@ public class VariableBundle implements Serializable {
      * @param newLog The new log.
      * @return This bundle.
      */
-    @NotNull
-    public VariableBundle setLog(@NotNull ArrayList<String> newLog) {
+    @NonNull
+    public VariableBundle setLog(@NonNull ArrayList<String> newLog) {
         log = newLog;
         cullLog();
         return this;
@@ -131,8 +135,8 @@ public class VariableBundle implements Serializable {
      * @param newLog The new log.
      * @return This bundle.
      */
-    @NotNull
-    public VariableBundle setLog(@NotNull String[] newLog) {
+    @NonNull
+    public VariableBundle setLog(@NonNull String[] newLog) {
         return setLog(new ArrayList<>(Arrays.asList(newLog)));
     }
 
@@ -148,7 +152,7 @@ public class VariableBundle implements Serializable {
      * Retrieves the caption of this bundle.
      * @return The caption of this bundle.
      */
-    @NotNull
+    @NonNull
     public String getCaption() {
         return caption;
     }
@@ -188,7 +192,7 @@ public class VariableBundle implements Serializable {
      * Retrieves the log for this bundle.
      * @return The log for this bundle.
      */
-    @NotNull
+    @NonNull
     public ArrayList<String> getLog() {
         return log;
     }
@@ -245,7 +249,7 @@ public class VariableBundle implements Serializable {
      * Adds the given <code>String</code> to the beginning of this bundle's log.
      * @param newLine The new line to be included.
      */
-    private void addToLog(@NotNull String newLine) {
+    private void addToLog(@NonNull String newLine) {
         log.add(0,newLine);
         cullLog();
     }
@@ -270,7 +274,7 @@ public class VariableBundle implements Serializable {
      * Applies the given <code>Operation</code> to the value of this bundle.
      * @param op The <code>Operation</code> to apply.
      */
-    public void applyOperation(@NotNull Operation<Integer> op) {
+    public void applyOperation(@NonNull Operation<Integer> op) {
         addToLog(formatLogEntry(mainValue,op.toString()));
         mainValue = op.apply(mainValue);
     }
@@ -281,8 +285,8 @@ public class VariableBundle implements Serializable {
      * @param op The operation which was applied, as a <code>String</code>.
      * @return The log entry for the application.
      */
-    @NotNull
-    private static String formatLogEntry(int oldValue, String op) {
-        return String.valueOf(oldValue) + "\t" + op + "\t" + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+    @NonNull
+    private static String formatLogEntry(int oldValue, @NonNull String op) {
+        return String.valueOf(oldValue) + "    " + op + "    " + ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
     }
 }
